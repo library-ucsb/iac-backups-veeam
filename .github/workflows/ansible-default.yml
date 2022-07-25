@@ -1,0 +1,80 @@
+
+
+name: "terraform: initialize and plan  - route53 / coredns integration"
+on:
+  push:
+    branches:
+      - '!main'
+      - 'dev**'
+
+    paths:
+      - 'ansible/**'
+      - '.github/workflows/ansible-*.yml'
+    
+jobs:
+
+  playbook:
+    name: "ansible-playbook: SERVICE"
+    runs-on: [ self-hosted, linux ] # ubuntu-latest, linux, self-hosted, and more
+    env:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.TERRAFORM_GITHUB_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      VMWARE_HOST: ${{ secrets.VMWARE_HOST }}
+      VMWARE_USERNAME: ${{ secrets.VMWARE_USERNAME }}
+      VMWARE_PASSWORD: ${{ secrets.VMWARE_PASSWORD }}
+      ANSIBLE_BECOME_PASSWORD: ${{ secrets.ANSIBLE_BECOME_PASSWORD }}
+
+    container: 
+      image: ghcr.io/library-ucsb/iac-ansible-container/ansible-container:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        actor: ${{ github.actor }}
+    
+   
+    steps:
+      - name: checkout branch
+        uses: actions/checkout@v3
+
+      - name: create vault password file
+        run: |
+          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > ansible/ansible-vault-password-file.txt
+          chmod 0400 ansible/ansible-vault-password-file.txt
+      
+      - name: create ansible-vault ssh private key
+        run: |
+          echo "${{ secrets.ANSIBLE_DEPLOY_SSH_KEY }}" > ansible/ansible-ssh-private-key
+          chmod 0400 ansible/ansible-ssh-private-key
+
+      - name: run ansible
+        id: run_ansible
+        shell: bash
+        run: |
+          rc=0
+          
+          cd ansible
+          mkdir logs
+          ansible-playbook --inventory=inventory.yml site.yml \
+                           --vault-password-file=ansible-vault-password-file.txt \
+                           --user=ansible-deploy \
+                           --private-key=ansible-ssh-private-key \
+                           --check
+
+          if [ $? -ne 0 ]; then
+            rc=1
+          fi
+
+          rm ansible-ssh-private-key
+          rm ansible-vault-password-file.txt
+
+          exit $rc             
+
+      - name: "publish: create artifact out of the ansible.log"
+        uses: actions/upload-artifact@v3
+        with:
+          name: logs-ansible-coredns-deploy
+          path: ansible/logs/*
+      

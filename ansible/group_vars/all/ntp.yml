@@ -1,0 +1,9 @@
+ntp_timezone: America/Los_Angeles
+ntp_manage_config: True
+ntp_servers:
+  - '128.111.1.5'
+  - '128.111.1.6'
+
+ntp_restrict:
+  - '127.0.0.1'
+  - '::1'

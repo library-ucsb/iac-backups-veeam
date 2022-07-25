@@ -1,0 +1,75 @@
+---
+
+- name: "Sample Ansible Playbook"
+  hosts: vmware_tag_you_defined_in_terraform
+  become: true
+
+  environment:
+    http_proxy: http://10.11.100.201:3128
+    https_proxy: http://10.11.100.201:3128
+  
+  vars:
+    # This will pull the necessary 'become password' from the running environment.
+    ansible_become_password: "{{ lookup('amazon.aws.aws_secret', 'ANSIBLE_BECOME_PASSWORD', region='us-west-2') }}"
+
+  roles:
+
+     - role: library.core.yum_config
+       tags:
+        - role:service:init.yum
+        - stage:init:yum
+        - stage:init
+
+     - role: library.core.epel
+       tags: 
+        - role:service:init:epel
+        - stage:init:epel
+        - stage:init
+     
+     - role: singleplatform-eng.users    
+       tags: 
+        - stage:init
+        - stage:init:user
+        - stage:init:users
+        - stage:init:groups
+
+     - role: ahuffman.sudoers
+       tags: 
+        - stage:init       
+        - role:service:sudo
+        - role:service:sudoers
+
+     - role: willshersystems.sshd
+       tags: 
+        - stage:init
+        - role:service:sshd
+
+     - role: geerlingguy.ntp
+       tags: 
+        - stage:init
+        - role:service:ntp
+        - role:service:ntpd
+        - never
+
+     - role: sbaerlocher.snmp
+       tags:
+        - stage:init
+        - role:service:snmp
+
+     - role: geerlingguy.firewall
+       tags:
+        - stage:init
+        - role:service:firewall
+
+  tasks:
+
+    - ansible.builtin.set_fact:
+        aws_access_key_id: "{{ lookup('amazon.aws.aws_secret', 'service-coredns-AWS_ACCESS_KEY_ID', region='us-west-2') }}"
+        aws_secret_access_key: "{{ lookup('amazon.aws.aws_secret', 'service-coredns-AWS_SECRET_ACCESS_KEY', region='us-west-2') }}"
+
+      tags: 
+        - role:coredns:install
+        - role:coredns:install:secrets
+        - role:coredns:tss
+      delegate_to: 127.0.0.1
+

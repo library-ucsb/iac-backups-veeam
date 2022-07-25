@@ -1,0 +1,15 @@
+---
+
+collections:
+  - name: community.general
+  - name: community.vmware
+  - name: git@github.com:library-ucsb/library-ansible-collections-core.git
+  - name: git@github.com:library-ucsb/library-ansible-collections-legacy.git
+
+roles:
+  - name: singleplatform-eng.users
+  - name: willshersystems.sshd
+  - name: ahuffman.sudoers
+  - name: geerlingguy.firewall
+  - name: geerlingguy.ntp
+  - name: sbaerlocher.snmp

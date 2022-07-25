@@ -1,0 +1,37 @@
+name: "terraform: initialize, and plan"
+on:
+  push:
+    branches:
+      - '!main'
+      - 'dev**'
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/terraform-*.yml'
+    
+jobs:
+
+  init:
+    name: "terraform: setup, initialize, and plan"
+    runs-on: ubuntu-latest 
+    env:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.TERRAFORM_GITHUB_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      VMWARE_HOST: ${{ secrets.VMWARE_HOST }}
+      VMWARE_USERNAME: ${{ secrets.VMWARE_USERNAME }}
+      VMWARE_PASSWORD: ${{ secrets.VMWARE_PASSWORD }}
+
+    steps:
+      - name: checkout branch
+        uses: actions/checkout@v3
+
+      - name: "terraform: installing"
+        uses: hashicorp/setup-terraform@v2
+
+      - name: "terraform: init"
+        run: cd terraform; terraform init -upgrade
+    
+      - name: "terraform: plan stage"
+        id: plan
+        run: cd terraform; terraform plan -no-color

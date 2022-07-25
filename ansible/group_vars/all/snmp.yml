@@ -1,0 +1,18 @@
+# sbaerlocher.snmp - snmp config
+snmp_user: "{{ secret.snmpv3.logicmonitor.user }}"
+snmp_password: "{{ secret.snmpv3.logicmonitor.sha_pass }}"
+snmp_encryption: "{{ secret.snmpv3.logicmonitor.aes_pass }}"
+snmp_contact: "John Ajao"
+snmp_location: "University of California, Santa Barbara"
+snmp_deamon_group: 'snmp'
+snmp_deamon_user: 'snmp'
+
+# this is to fix mispelling in upstream role
+snmp_agentaddress_adress:
+  ipv4: ""
+  ipv6: ""
+
+# the following are to mitigate a common mispelling in the module
+snmp_agentadress_adress: "{{ snmp_agentaddress_adress }}"
+snmp_agentadress_protocol: "{{ snmp_agentaddress_protocol }}"
+snmp_agentadress_port: "{{ snmp_agentaddress_port }}"
