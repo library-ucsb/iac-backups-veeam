@@ -1,7 +1,7 @@
 github_owner                        = "library-ucsb"
 
 repo = {
-    name                            = "iac-SERVICE_CATEGORY-SERVICE" #iac-dns-coredns
+    name                            = "iac-backups-veeam" #iac-dns-coredns
     description                     = ""
     github_organization             = "library-ucsb"
     github_enforce_admins           = false
@@ -12,7 +12,7 @@ repo = {
 tf_state_backend_s3 = {
     namespace                       = "ucsb-library"
     environment                     = "iac"
-    stage                           = "service_name"
+    stage                           = "backups-veeam"
     name                            = "terraform"
     attributes                      = [ "state" ]
 }
