@@ -3,6 +3,11 @@ variable "github_owner" {
     default = "library-ucsb"
 }
 
+variable "veeam_aws_iam_username" {
+    type    = string
+    default = "veeam"
+}
+
 variable "aws_region" {
   type      = string
   default = "us-west-2"  

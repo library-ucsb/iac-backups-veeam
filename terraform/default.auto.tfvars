@@ -1,4 +1,6 @@
 github_owner                        = "library-ucsb"
+veeam_aws_iam_username              = "veeam"
+
 
 repo = {
     name                            = "iac-backups-veeam" #iac-dns-coredns
