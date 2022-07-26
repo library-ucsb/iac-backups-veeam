@@ -27,6 +27,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::406663345920:role/ucsb-role-terraform-full
           aws-region: us-west-2
+          role-duration-seconds: 1200
 
       - name: "terraform: installing"
         uses: hashicorp/setup-terraform@v2
