@@ -26,7 +26,7 @@ resource "aws_iam_user" "veeam" {
     name                        = var.veeam_aws_iam_username
 }
 
-resource "aws_iam_group_membership" "veeam" {
+resource "aws_iam_user_group_membership" "veeam" {
     user                        = aws_iam_user.veeam.name
     groups = [
         module.aws_role.aws_iam_group.name
