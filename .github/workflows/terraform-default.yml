@@ -22,6 +22,12 @@ jobs:
       - name: checkout branch
         uses: actions/checkout@v3
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::406663345920:role/ucsb-role-terraform-full
+          aws-region: us-west-2
+
       - name: "terraform: installing"
         uses: hashicorp/setup-terraform@v2
 
