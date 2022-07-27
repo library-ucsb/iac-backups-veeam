@@ -10,7 +10,7 @@ on:
 jobs:
 
   init:
-    name: "terraform: setup, initialize, and plan"
+    name: "terraform: setup, initialize, and apply"
     runs-on: ubuntu-latest 
     env:
       GITHUB_TOKEN: ${{ secrets.TERRAFORM_GITHUB_TOKEN }}
@@ -33,11 +33,7 @@ jobs:
 
       - name: "terraform: init"
         run: cd terraform; terraform init -upgrade
-    
-      - name: "terraform: plan stage"
-        id: plan
-        run: cd terraform; terraform plan -no-color
-      
+       
       - name: "terraform: apply"
         id: apply
         run: cd terraform; terraform apply -auto-approve -no-color
