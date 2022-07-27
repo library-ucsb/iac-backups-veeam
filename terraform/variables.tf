@@ -13,6 +13,11 @@ variable "aws_region" {
   default = "us-west-2"  
 }
 
+variable "policy_relative_directory" {
+  type      = string
+  default   = "./policy"
+}
+
 variable "repo" {
   type = object({
     name                        = string

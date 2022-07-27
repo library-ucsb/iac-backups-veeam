@@ -14,13 +14,12 @@ resource "aws_s3_bucket_public_access_block" "veeam" {
     restrict_public_buckets     = true
 }
 
-module "aws_role" {
-    source                      = "github.com/library-ucsb/terraform-module-aws-role-complete"
-
-    role_name                   = local.role_name
-    policy_relative_directory   = "./policy"
-}
-
+#module "aws_role" {
+#    source                      = "github.com/library-ucsb/terraform-module-aws-role-complete"
+#
+#    role_name                   = local.role_name
+#    policy_relative_directory   = "./policy"
+#}
 
 resource "aws_iam_user" "veeam" {
     name                        = var.veeam_aws_iam_username
@@ -29,10 +28,26 @@ resource "aws_iam_user" "veeam" {
 resource "aws_iam_user_group_membership" "veeam" {
     user                        = aws_iam_user.veeam.name
     groups = [
-        module.aws_role.aws_iam_group.name
+        aws_iam_group.iam_group.name
     ]
 }
 
 resource "aws_iam_access_key" "veeam" {
     user                        = aws_iam_user.veeam.name
+}
+
+
+#resource "aws_iam_policy" "target_policy" {
+#    name                            = "ucsb-policy-role-${local.role_name}"
+#    policy                          = file("${var.policy_relative_directory}/${local.role_name}.json")
+#}
+
+resource "aws_iam_group_policy" "iam_group_policy" {
+    name                            = "ucsb-policy-group-role-${local.role_name}"
+    group                           = aws_iam_group.iam_group.name
+    policy                          = file("${var.policy_relative_directory}/${local.role_name}.json")
+}
+
+resource "aws_iam_group" "iam_group" {
+    name                            = "ucsb-group-role-${local.role_name}"
 }
